@@ -106,7 +106,7 @@ After viewing the original data, it can be easily found that the  `categories` c
 
 After the ETL operations, the new data we have obtained is as follow:
 
-![](.\src\data_new.png)
+<img src=".\src\data_new.png" style="zoom:50%;" />
 
 
 
