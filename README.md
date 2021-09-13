@@ -90,7 +90,7 @@ After viewing the original data, it can be easily found that the  `categories` c
 
 2. Keep the last character of each element 
 
-   <img src="D:\Codes\Python\Udacity\PROJECT 2\Disaster_Responce_Pipelines\src\data_step2.png" style="zoom:50%;" />
+   <img src=".\src\data_step2.png" style="zoom:50%;" />
 
 3. Merge two sets of data, which are the disaster messages and the disaster categories
 
@@ -106,7 +106,7 @@ After viewing the original data, it can be easily found that the  `categories` c
 
 After the ETL operations, the new data we have obtained is as follow:
 
-![](.\src\data_new.png)
+<img src=".\src\data_new.png" style="zoom:50%;" />
 
 
 
