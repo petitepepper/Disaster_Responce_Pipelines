@@ -2,8 +2,9 @@ import json
 import plotly
 import pandas as pd
 
-from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem.wordnet import WordNetLemmatizer
 
 from flask import Flask
 from flask import render_template, request, jsonify
@@ -30,7 +31,7 @@ engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('DisasterResponse', engine)
 
 # load model
-model = joblib.load("../models/classifier_rk.pkl")
+model = joblib.load("../models/classifier_svc.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
