@@ -164,5 +164,4 @@ Using the **FLASK** framework, we can deploy python code about machine learning 
 
 
 
-
-
+You can also run the `python run.py` command directly in the `/app` directory of this project, in a terminal, to run it locally.
