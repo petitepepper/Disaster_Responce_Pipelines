@@ -100,7 +100,7 @@ After viewing the original data, it can be easily found that the  `categories` c
 
 **Please execute the python file `process_data.py` in your terminal as following :**
 
-![](\src\process_data_command_line.png)
+<img src=".\src\process_data_command_line.png" style="zoom:50%;" />
 
 
 
