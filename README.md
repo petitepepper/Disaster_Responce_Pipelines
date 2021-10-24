@@ -100,6 +100,12 @@ After viewing the original data, it can be easily found that the  `categories` c
 
 
 
+**Please execute the python file `process_data.py` in your terminal as following :**
+
+<img src="C:\Users\meiji\AppData\Roaming\Typora\typora-user-images\image-20211024115440732.png" alt="image-20211024115440732" style="zoom:50%;" />
+
+
+
 
 
 ## Data Modeling
