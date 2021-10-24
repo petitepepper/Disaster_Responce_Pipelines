@@ -43,14 +43,12 @@ In this repository, document hierarchy are shown as follow:
 │   ├── DisasterResponse.db-------------# DATABASE TO SAVE CLEANED DATA TO
 │   ├── disaster_categories.csv---------# DATA TO PROCESS
 │   ├── disaster_messages.csv-----------# DATA TO PROCESS
+│   ├── ETL Pipeline Preparation.ipynb--# DATA ETL DEMOSTRATION (same as `process_data.py`)
 │   └── process_data.py-----------------# PERFORMS ETL PROCESS
 │
 ├── models
+│   ├── ML Pipeline Preparation.ipynb---# ML PIPELINE DEMOSTRATION (same as `train_classifier.py`)
 │   └── train_classifier.py-------------# PERFORMS CLASSIFICATION TASK
-│
-├──jupyter
-│   ├── ETL Pipeline Preparation.ipynb--# DATA ETL DEMOSTRATION
-│   └── ML Pipeline Preparation.ipynb---# ML PIPELINE DEMOSTRATION
 │
 ├── src---------------------------------# IMAGES USED IN　README　FILE
 
@@ -102,7 +100,7 @@ After viewing the original data, it can be easily found that the  `categories` c
 
 **Please execute the python file `process_data.py` in your terminal as following :**
 
-<img src="C:\Users\meiji\AppData\Roaming\Typora\typora-user-images\image-20211024115440732.png" alt="image-20211024115440732" style="zoom:50%;" />
+![](\src\process_data_command_line.png)
 
 
 
