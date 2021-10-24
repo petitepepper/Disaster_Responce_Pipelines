@@ -4,7 +4,16 @@ from sqlalchemy import create_engine
 
 def load_data(messages_filepath, categories_filepath):
     """
+    Load datasets and merge them into one 
+
+    INPUT 
+    @messages_filepath   : the file path of `messages` file
+    @categories_filepath : the file path of `categories` file
+
+    OUTPUT
+    @df : a pandas dataframe which merges the data of the file provided
     """
+
     # load datasets
     messages   = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
@@ -15,7 +24,15 @@ def load_data(messages_filepath, categories_filepath):
 
 def clean_data(df):
     """
+    Clean the original data for further modeling
+
+    INPUT
+    @df : the pandas dataframe that produced from `load_data` function
+
+    OUTPUT
+    @df : a pandas dataframe that has been cleaned 
     """
+
     # create a dataframe of the 36 individual category columns
     categories = df['categories'].str.split(";",expand=True)
     # select the first row of the categories dataframe
@@ -41,7 +58,13 @@ def clean_data(df):
 
 def save_data(df, database_filename):
     """
+    Save the cleaned data into database
+    
+    INPUT
+    @df : a pandas dataframe of cleaned data (produced from the `clean_data` function)
+    @database_filename : the filename (possibly with file path) of database
     """
+    
     engine = create_engine(f'sqlite:///{database_filename}')
     df.to_sql("DisasterResponse", engine, index=False) 
 
