@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine
@@ -13,34 +14,29 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.svm import SVC
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.feature_extraction.text import CountVectorizer,TfidfTransformer
 from sklearn.model_selection import GridSearchCV,RandomizedSearchCV
 from sklearn.metrics import classification_report,accuracy_score
-from sklearn.utils.fixes import loguniform
 
 
-def load_data(database_path):
+def load_data(database_filepath):
     """ 
     load data from database 
     """
-    engine = create_engine('sqlite:///' + database_path)
+    engine = create_engine('sqlite:///' + database_filepath)
     df = pd.read_sql_table('DisasterResponse',engine)
 
     X = df['message']
     Y = df.drop(['message','id','original','genre'], axis=1)
-    # fill NaN values & drop columns with only one value
-    Y = Y.fillna(0).drop('child_alone',axis=1)
+    
+    # drop columns that has only one value
+    Y = Y.drop('child_alone',axis=1)
 
     # the name will be used in further steps
-    class_names = Y.columns.values
+    category_names = Y.columns.values
 
-    onehot_encoder = OneHotEncoder(sparse = False)
-    Y = onehot_encoder.fit_transform(Y)
-
-    return X,Y,class_names
-
+    return X,Y,category_names
 
 
 def tokenize(text):
@@ -50,25 +46,30 @@ def tokenize(text):
     stop_words = stopwords.words('english')
     lemmatizer = WordNetLemmatizer()
     
+    #Regex to find urls
+    url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+    # Finds all urls from the provided text
+    detected_urls = re.findall(url_regex, text)
+    #Replaces all urls found with the "urlplaceholder"
+    for url in detected_urls:
+        text = text.replace(url, "urlplaceholder")
+
     # Normalize
     text = re.sub(r"[^a-zA-Z0-9]"," ", text.lower())
     # Tokenize
     tokens = word_tokenize(text)
     # Lemmatize
-    tokens = [lemmatizer.lemmatize(word) for word in tokens if word not in stop_words]
+    clean_tokens = [lemmatizer.lemmatize(word) for word in tokens if word not in stop_words]
 
-    new_text = " ".join(tokens)
-    return new_text
+    #new_text = " ".join(tokens)
+    return clean_tokens
 
 
-
-def build_model_cv(classifier,params,search_method="grid"):
+def build_model(search_method="grid"):
     """
     Build a ML pipeline using TF-IDF and a classifier chosen by user
 
     INPUT:
-    classifier    - an instance of a ML classifier 
-    params        - range of parameters in form of dictionary, for GridSearchCV
     search_method - {"grid","random"}. 
                     "grid" refers to GridSearchCV; "random" refers to "RandomizedSearchCV"
 
@@ -78,36 +79,42 @@ def build_model_cv(classifier,params,search_method="grid"):
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf',TfidfTransformer()),
-        ('clf',MultiOutputClassifier(classifier))
+        ('clf',MultiOutputClassifier(SVC()))
     ])
+
+    params = {
+        'clf__estimator__kernel': ['rbf','linear'],
+        'clf__estimator__C'     : [1e-3,1e-2,1e-1,1,10]
+    }
+
 
     if search_method == "grid":
         cv = GridSearchCV(
             pipeline,
             param_grid=params,
-            n_jobs=-1,cv=3
+            cv=3
         )
     elif search_method == "random":
         cv = RandomizedSearchCV(
             pipeline,
             param_distributions=params,
-            n_jobs=-1,cv=3
+            cv=3
         )
 
     return cv
 
 
-def model_evaluation(model,X_test,y_test,class_names,print_result=True):
+def evaluate_model(model, X_test, Y_test, category_names,print_result=True):
     y_pred = model.predict(X_test)
-    n_class = len(class_names)
+    n_class = len(category_names)
     avg = 0
     for i in range(n_class):
-        accuracy = accuracy_score(y_test[:,i], y_pred[:,i])
+        accuracy = accuracy_score(Y_test.iloc[:, i].values, y_pred[:,i])
         avg += accuracy
         if print_result:
-            print("Category:",class_names[i])
+            print("Category:",category_names[i])
             print("Accuracy: %.4f"%(accuracy))
-            print(classification_report(y_test[:,i], y_pred[:,i]))
+            print(classification_report(Y_test.iloc[:, i].values, y_pred[:,i]))
             print("\n")
 
     avg /= n_class
@@ -115,47 +122,37 @@ def model_evaluation(model,X_test,y_test,class_names,print_result=True):
     return avg
 
 
+def save_model(model, model_filepath):
+    joblib.dump(model,model_filepath)
 
-#%%
+
 def main():
-    # load data
-    database_path = "../data/DisasterResponse.db"
-    X,Y,class_names = load_data(database_path)
-    X_train,X_test,y_train,y_test = train_test_split(X,Y)
+    if len(sys.argv) == 3:
+        database_filepath, model_filepath = sys.argv[1:]
+        print('Loading data...\n    DATABASE: {}'.format(database_filepath))
+        X, Y, category_names = load_data(database_filepath)
+        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
+        
+        print('Building model...')
+        model = build_model()
+        
+        print('Training model...')
+        model.fit(X_train, Y_train)
+        
+        print('Evaluating model...')
+        evaluate_model(model, X_test, Y_test, category_names)
 
-    # set classifier and parameters
-    
-    # Random Forest
-    classifier = RandomForestClassifier()
-    params = {
-        'clf__estimator__n_estimators' : [50,100,200],
-        'clf__estimator__min_samples_split': [2, 3, 4],
-        'clf__estimator__criterion': ['entropy', 'gini']
-    }
-    
-    """
-    # SVM
-    classifier = SVC()
-    params = {
-        'clf__estimator__kernel': ['rbf'],
-        'clf__estimator__gamma' : loguniform(1e-4, 1e-1),
-        'clf__estimator__C'     : loguniform(1e-4, 1e1)
-    }
-    """
+        print('Saving model...\n    MODEL: {}'.format(model_filepath))
+        save_model(model, model_filepath)
 
-    print("Building model...")
-    model = build_model_cv(classifier,params)
+        print('Trained model saved!')
 
-    print("Training model...")
-    model.fit(X_train, y_train)
+    else:
+        print('Please provide the filepath of the disaster messages database '\
+              'as the first argument and the filepath of the pickle file to '\
+              'save the model to as the second argument. \n\nExample: python '\
+              'train_classifier.py ../data/DisasterResponse.db classifier.pkl')
 
-    model_evaluation(model,X_test,y_test,class_names)
 
-    # save model
-    print("Saving model...")
-    joblib.dump(model,'classifier.pkl')
-    print("Model saved successfully!")
-
-    
 if __name__ == '__main__':
     main()
