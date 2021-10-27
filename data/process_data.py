@@ -51,9 +51,7 @@ def clean_data(df):
     df = pd.concat([df,categories],axis=1)
     # remove duplicates
     df = df.drop_duplicates()
-    # drop rows with NA
-    df.dropna(inplace=True)
-
+    
     return df
 
 
