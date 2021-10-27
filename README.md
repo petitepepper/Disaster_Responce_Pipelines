@@ -156,16 +156,29 @@ To obtain satisfactory results, we can use <u>random search</u> and/or <u>grid s
 
 For testing multi-label classification models, the accuracy of the model can be calculated using <u>Hamming loss</u>. Of course, we can also use the built-in  `classification_report` method in *sklearn*,  however, it should be used once for each tag.
 
-Here, we tried Naive Bayes, SVM and Random Forest models. The best results come from the random forest model, which achieves an average accuracy of 98%, while the other two are only about 92%. However, the cost is that the random forest model took far more time to train than the others (more than a day on my computer).
-
-
+Here, we tried SVM and Naive Bayes. The best results come from the random forest model, which achieves an average accuracy of 96%, while the other is only about 92%. 
 
 
 
 ## Deploy
 
-Using the **FLASK** framework, we can deploy python code about machine learning in the web backend
+Using the **FLASK** framework, we can create a dashboard to visualize data and also deploy the machine learning model in the web backend.
+
+You can use the `python run.py` command directly in the `/app` directory of this project, in a terminal, to run it locally.
 
 
 
-You can also run the `python run.py` command directly in the `/app` directory of this project, in a terminal, to run it locally.
+First you will see some visualization of the cleaned data on the initial page.
+
+<img src=".\src\visualization.png" style="zoom:70%;" />
+
+
+
+
+
+Then enter a message in the top input box, and you can see the results of the classification:
+
+<img src=".\src\classifier_result.png" style="zoom:70%;" />
+
+The highlighted parts are the categories predicted by the model.
+
