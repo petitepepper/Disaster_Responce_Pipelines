@@ -57,7 +57,7 @@ def index():
     graphs = [
         # Figure 1 : Message Genres
         {
-            'data': [Pie(values=genre_percent,labels=genre_names)],
+            'data': [Pie(values=genre_counts,labels=genre_names)],
 
             'layout': {
                 'title': 'Distribution of Message Genres'
