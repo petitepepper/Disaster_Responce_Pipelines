@@ -9,6 +9,8 @@ from nltk.stem.wordnet import WordNetLemmatizer
 from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
+import plotly.express as px
+import plotly.figure_factory as ff
 import joblib
 from sqlalchemy import create_engine
 
@@ -40,13 +42,23 @@ model = joblib.load("../models/classifier_svc.pkl")
 def index():
     
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
+
+    categories = df.drop(["id","message","original","genre"],axis=1)
     
+    category_counts_df = categories.sum(axis=0)
+    category_counts = list(category_counts_df.values)
+    category_names  = list(category_counts_df.index.values)
+    
+    requests_counts  = categories[categories['request']==1].drop(["request","offer"],axis=1).sum()
+    offers_counts    = categories[categories['offer']==1].drop(["request","offer"],axis=1).sum()
+    hist_data    = [requests_counts.values,offers_counts.values]
+    group_labels = ["Request","Offer"]
+
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
     graphs = [
+        # Figure 1 : Message Genres
         {
             'data': [
                 Bar(
@@ -57,14 +69,34 @@ def index():
 
             'layout': {
                 'title': 'Distribution of Message Genres',
-                'yaxis': {
-                    'title': "Count"
-                },
-                'xaxis': {
-                    'title': "Genre"
-                }
+                'yaxis': {'title': "Count"},
+                'xaxis': {'title': "Genre"}
+            }
+        },
+
+        # Figure 2 : Category Counts
+        {
+            'data':[
+                px.treemap(
+                    names  = category_names,
+                    values = category_counts
+                )
+            ],
+            'layout':{
+                'title' : 'Count of Message Categories',
+            }
+        },
+
+        # Figure 3 : Requests & Offers Distribution 
+        {
+            'data':[ff.create_distplot(hist_data,group_labels)],
+            'layout':{
+                'title':'Distribution of Requests and Offers',
+                'xaxis': {'title':'category'},
+                'yaxis': {'title':'counts'}
             }
         }
+
     ]
     
     # encode plotly graphs in JSON
