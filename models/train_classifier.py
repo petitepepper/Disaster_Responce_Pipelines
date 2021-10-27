@@ -32,6 +32,8 @@ def load_data(database_filepath):
     
     # drop columns that has only one value
     Y = Y.drop('child_alone',axis=1)
+    # drop NaN
+    Y.dropna(inplace=True)
 
     # the name will be used in further steps
     category_names = Y.columns.values
