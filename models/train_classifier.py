@@ -32,8 +32,8 @@ def load_data(database_filepath):
     
     # drop columns that has only one value
     Y = Y.drop('child_alone',axis=1)
-    # drop NaN
-    Y.dropna(inplace=True)
+    # fill NaN
+    Y.fillna(0)
 
     # the name will be used in further steps
     category_names = Y.columns.values
@@ -106,18 +106,30 @@ def build_model(search_method="grid"):
     return cv
 
 
-def evaluate_model(model, X_test, Y_test, category_names,print_result=True):
+def evaluate_model(model, X_test, Y_test, category_names):
+    """
+    Evaluate the multilabel classifier by printing out the classification report for each class
+
+    INPUT
+    @model  : a trained classifier (which is the output of the previous `build_model` function)
+    @X_test : test dataset
+    @Y_test : test dataset
+    @category_names : a list of category names, which is the output of the `load_data` function
+    
+    OUTPUT
+    @avg : average accuracy on all classes (not weighted)
+    """
     y_pred = model.predict(X_test)
     n_class = len(category_names)
     avg = 0
     for i in range(n_class):
         accuracy = accuracy_score(Y_test.iloc[:, i].values, y_pred[:,i])
         avg += accuracy
-        if print_result:
-            print("Category:",category_names[i])
-            print("Accuracy: %.4f"%(accuracy))
-            print(classification_report(Y_test.iloc[:, i].values, y_pred[:,i]))
-            print("\n")
+      
+        print("Category:",category_names[i])
+        print("Accuracy: %.4f"%(accuracy))
+        print(classification_report(Y_test.iloc[:, i].values, y_pred[:,i]))
+        print("\n")
 
     avg /= n_class
     print(f"Average of accuracy:{avg}")
@@ -125,6 +137,13 @@ def evaluate_model(model, X_test, Y_test, category_names,print_result=True):
 
 
 def save_model(model, model_filepath):
+    """
+    Save the classifier in specified file path
+
+    INPUT:
+    @model: classifier
+    @model_filepath: the path to which the model file is saved. Recommanded to save as `.pkl`
+    """
     joblib.dump(model,model_filepath)
 
 
