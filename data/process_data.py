@@ -45,6 +45,8 @@ def clean_data(df):
     # Convert category values to just numbers 0 or 1
     extract_number_to_int = lambda x: int(x[-1])
     categories = categories.applymap(extract_number_to_int)
+    # replace the 2 entries by 1
+    categories['related'][categories['related']==2]=1
     # drop the original categories column from `df`
     df = df.drop('categories', axis=1)
     # concatenate the original dataframe with the new `categories` dataframe
