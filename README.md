@@ -98,7 +98,9 @@ After viewing the original data, it can be easily found that the  `categories` c
 
 
 
-**Please execute the python file `process_data.py` in your terminal as following :**
+**Execute the python file `process_data.py` in your terminal as following (in the '/data' path) :**
+
+`python process_data.py disaster_messages.csv disaster_categories.csv DisasterResponse.db`
 
 <img src=".\src\process_data_command_line.png" style="zoom:50%;" />
 
@@ -110,7 +112,7 @@ After viewing the original data, it can be easily found that the  `categories` c
 
 After the ETL operations, the new data we have obtained is as follow:
 
-<img src=".\src\data_new.png" style="zoom:50%;" />
+<img src=".\src\data_new.png" style="zoom:40%;" />
 
 
 
@@ -150,13 +152,85 @@ To obtain satisfactory results, we can use <u>random search</u> and/or <u>grid s
 
 
 
+**Execute the python file `train_classifier.py` in your terminal as following (in the '/models' path) :**
+
+`python train_classifier.py ../data/DisasterResponse.db classifier.pkl`
+
+<img src=".\src\training_model.png" style="zoom:50%;" />
+
 
 
 ## Evaluation
 
 For testing multi-label classification models, the accuracy of the model can be calculated using <u>Hamming loss</u>. Of course, we can also use the built-in  `classification_report` method in *sklearn*,  however, it should be used once for each tag.
 
-Here, we tried SVM and Naive Bayes. The best results come from the random forest model, which achieves an average accuracy of 96%, while the other is only about 92%. 
+Here, we tried SVM and Naive Bayes. The best results come from the random forest model, which achieves an average accuracy of 96%, while the other is only about 82%. 
+
+You can check the evaluation report in the file "/models/ML Pipeline Preparation.ipynb"
+
+> ```
+> Category: related
+> Accuracy: 0.8995
+>               precision    recall  f1-score   support
+> 
+>            0       0.85      0.68      0.75      1496
+>            1       0.91      0.97      0.94      5058
+> 
+>     accuracy                           0.90      6554
+>    macro avg       0.88      0.82      0.85      6554
+> weighted avg       0.90      0.90      0.90      6554
+> 
+> 
+> 
+> Category: request
+> Accuracy: 0.9246
+>               precision    recall  f1-score   support
+> 
+>            0       0.94      0.98      0.96      5448
+>            1       0.85      0.67      0.75      1106
+> 
+>     accuracy                           0.92      6554
+>    macro avg       0.89      0.82      0.85      6554
+> weighted avg       0.92      0.92      0.92      6554
+> 
+> 
+> 
+> Category: offer
+> Accuracy: 0.9954
+>               precision    recall  f1-score   support
+> 
+>            0       1.00      1.00      1.00      6524
+>            1       0.00      0.00      0.00        30
+> 
+>     accuracy                           1.00      6554
+>    macro avg       0.50      0.50      0.50      6554
+> weighted avg       0.99      1.00      0.99      6554
+> 
+> 
+> 
+> ... 
+> 
+> 
+> 
+> Category: direct_report
+> Accuracy: 0.8937
+>               precision    recall  f1-score   support
+> 
+>            0       0.90      0.97      0.94      5283
+>            1       0.82      0.57      0.68      1271
+> 
+>     accuracy                           0.89      6554
+>    macro avg       0.86      0.77      0.81      6554
+> weighted avg       0.89      0.89      0.89      6554
+> 
+> 
+> 
+> Average of accuracy:0.9623959196128862
+> ```
+
+
+
+
 
 
 
