@@ -66,11 +66,11 @@ The data is separated into two files *disaster_messages.csv* and *disaster_categ
 
 - In the *disaster_messages.csv*  file, original messages in different languages have been translated to English and stored in the column `message`
 
-  <img src=".\src\data_messages_origin.png" style="zoom:48%;" />
+  <img src=".\src\data_messages_origin.png" style="zoom:58%;" />
 
 - These messages are divided into 36 categories related to disaster response, and saved in *disaster_categories.csv*
 
-<img src=".\src\data_category_origin.png" style="zoom:55%;" />
+<img src=".\src\data_category_origin.png" style="zoom:45%;" />
 
 
 
@@ -136,7 +136,7 @@ In order to achieve better performance of the classifier later, we need to **tok
 - remove stop words (i.e. words that usually have no meaning, e.g. "a", "the", "is")
 - lemmatizer words (convert the word to its original form)
 
-Then, a **TF-IDF **(Term Frequency - Inverse Document Frequency) will be implemented. It is a word frequency based method which helps to identify the words that distinguish each text from others.
+Then, a **TF-IDF**(Term Frequency - Inverse Document Frequency) will be implemented. It is a word frequency based method which helps to identify the words that distinguish each text from others.
 
 
 
